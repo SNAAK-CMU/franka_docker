@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  azure_kinect_humble:
+    image: iamlab-cmu/azure_kinect:humble
+    container_name: azure_kinect_humble
+    environment:
+      - "DISPLAY=unix${DISPLAY}"
+      - "QT_X11_NO_MITSHM=1"
+      - "LIBGL_ALWAYS_SOFTWARE=0"
+      - "LIBGL_ALWAYS_INDIRECT=0"
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev/shm:/dev/shm
+    privileged: true
+    network_mode: host
+    ipc: host
+    pid: host
+    restart: "unless-stopped"
+    command: ros2 launch azure_kinect_ros_driver driver.launch.py fps:=15 depth_mode:=NFOV_UNBINNED sensor_sn:=_${SENSOR_SN}

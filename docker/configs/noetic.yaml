@@ -1,0 +1,8 @@
+DOCKERFILE: "../Dockerfile"
+TAG: "iamlab-cmu/ros_cuda:noetic"
+ARGS:
+  BASE_IMAGE: "nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04"
+  ROS_DISTRO: "noetic"
+  ROS_VERSION: 1
+  INSTALL_ROS: True
+NOCACHE: False

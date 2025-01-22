@@ -1,0 +1,8 @@
+DOCKERFILE: "../Dockerfile"
+TAG: "iamlab-cmu/ros_cuda:humble"
+ARGS:
+  BASE_IMAGE: "nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04"
+  ROS_DISTRO: "humble"
+  ROS_VERSION: 2
+  INSTALL_ROS: True
+NOCACHE: False

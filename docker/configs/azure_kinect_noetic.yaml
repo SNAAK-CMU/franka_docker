@@ -1,0 +1,33 @@
+DOCKERFILE: "../Dockerfile"
+TAG: "iamlab-cmu/azure_kinect:noetic"
+ARGS:
+  BASE_IMAGE: "iamlab-cmu/ros_cuda:noetic"
+  ROS_DISTRO: "noetic"
+  ROS_VERSION: 1
+  INSTALL_ROS: False
+  POST_INSTALL:
+    - "apt-get update && apt-get upgrade -y"
+    - "apt-get install -y curl openssh-server git vim terminator software-properties-common"
+    - "apt-get install -y autoconf automake libtool curl make g++ unzip"
+    - "apt-get install -y python3-distutils"
+    - "pip3 install catkin-tools empy"
+    - "source /opt/ros/${ROS_DISTRO}/setup.bash"
+    - "echo source /opt/ros/${ROS_DISTRO}/setup.bash >> ${HOME}/.bashrc"
+    - "apt-get install -y libsoundio1"
+    - "wget https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4a1.4-dev/libk4a1.4-dev_1.4.1_amd64.deb"
+    - "wget https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4a1.4/libk4a1.4_1.4.1_amd64.deb"
+    - "wget https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/k/k4a-tools/k4a-tools_1.4.1_amd64.deb"
+    - "ACCEPT_EULA=y dpkg -i libk4a1.4* k4a-tools*"
+    - "rm libk4a1.4*"
+    - "rm k4a-tools*"
+    - "mkdir -p ${HOME}/ros/${ROS_DISTRO}/src && cd ${HOME}/ros/${ROS_DISTRO}/src"
+    - "git clone https://github.com/microsoft/Azure_Kinect_ROS_Driver.git"
+    - "cd Azure_Kinect_ROS_Driver"
+    - "git checkout melodic"
+    - "cd ../.."
+    - "rosdep install -ryi --from-paths src --ignore-src"
+    - "catkin_make"
+    - "source ${HOME}/ros/${ROS_DISTRO}/devel/setup.bash --extend"
+    - "echo source ${HOME}/ros/${ROS_DISTRO}/devel/setup.bash --extend >> ${HOME}/.bashrc"
+NOCACHE: False
+

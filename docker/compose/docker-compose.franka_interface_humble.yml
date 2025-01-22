@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  franka-interface:
+    image: "iamlab-cmu/franka_interface:humble"
+    container_name: "franka_interface_humble"
+    environment:
+      - "DISPLAY=${DISPLAY}"
+      - "QT_X11_NO_MITSHM=1"
+      - "LIBGL_ALWAYS_SOFTWARE=1"
+      - "LIBGL_ALWAYS_INDIRECT="
+      - "ROBOT_IP=${ROBOT_IP}"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/group:/etc/group:ro
+    privileged: true
+    network_mode: "host"
+    ipc: "host"
+    restart: "unless-stopped"
+    command: bash -c "cd /root/Documents/franka-interface/build && ./franka_interface --robot_ip ${ROBOT_IP} --with_gripper 0"
+
+  franka-ros-interface:
+    image: "iamlab-cmu/franka_interface:humble"
+    container_name: "franka_ros_interface_humble"
+    depends_on:
+      - franka-interface
+    environment:
+      - "DISPLAY=${DISPLAY}"
+      - "QT_X11_NO_MITSHM=1"
+      - "LIBGL_ALWAYS_SOFTWARE=1"
+      - "LIBGL_ALWAYS_INDIRECT="
+      - "ROBOT_IP=${ROBOT_IP}"
+      - "ROBOT_NUM=${ROBOT_NUM}"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/group:/etc/group:ro
+    privileged: true
+    network_mode: "host"
+    ipc: "host"
+    restart: "unless-stopped"
+    command: bash -c "cd /root/Documents/franka-interface && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/Documents/franka-interface/build/franka-interface-common:/root/Documents/franka-interface/build/franka-interface/proto && source ros2_ws/install/setup.bash --extend && sleep 5 && ros2 launch franka_ros_interface franka_ros_interface.launch.py robot_num:=${ROBOT_NUM}"
+
+  franka-gripper:
+    image: "iamlab-cmu/franka_interface:humble"
+    container_name: "franka_gripper_humble"
+    depends_on:
+      - franka-interface
+      - franka-ros-interface
+    environment:
+      - "DISPLAY=${DISPLAY}"
+      - "QT_X11_NO_MITSHM=1"
+      - "LIBGL_ALWAYS_SOFTWARE=1"
+      - "LIBGL_ALWAYS_INDIRECT="
+      - "ROBOT_IP=${ROBOT_IP}"
+      - "ROBOT_NUM=${ROBOT_NUM}"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/group:/etc/group:ro
+    privileged: true
+    network_mode: "host"
+    restart: "unless-stopped"
+    command: bash -c "cd /root/Documents/franka-interface && source ros2_ws/install/setup.bash --extend && ros2 launch franka_ros_interface franka_gripper.launch.py robot_num:=${ROBOT_NUM} robot_ip:=${ROBOT_IP}"
