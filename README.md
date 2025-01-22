@@ -1,5 +1,3 @@
-# iam-docker
-
 ## [Docker Installation Instructions](https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository):
 1. Install Prerequisites:
 ```
